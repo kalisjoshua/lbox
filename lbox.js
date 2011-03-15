@@ -1,4 +1,9 @@
-
+/*
+ * Author:  Joshua T Kalis
+ * website: http://joshuakalis.com
+ * email:   kalisjoshua@gmail.com
+ * twitter: @kalisjoshua
+*/
 !!window.jQuery && (function (window, $) {
     var open = {};
     
