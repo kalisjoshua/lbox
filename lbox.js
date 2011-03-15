@@ -26,10 +26,6 @@
             open[this.href] = true;
             event.preventDefault();
 
-            // $.when($("<img/>", {"src": this.href})).
-            //     done(function (element) {
-            //         console.log(element.get(0).height);
-            //     });
             var blind = $("<div/>").
                             hide().
                             appendTo("body").
@@ -77,8 +73,9 @@
                             url: link.href,
                             success:
                                 function (response) {
+                                    response = !!link.hash ? $(response).find(link.hash) : response;
                                     temp.
-                                        html($(response).find(link.hash)).
+                                        html(response).
                                         find("> *").
                                             hide().
                                             end().
@@ -94,7 +91,7 @@
                                         }, 1000, function () {
                                             $(this).
                                                 find("> *").
-                                                    fadeIn();
+                                                    show();
                                         });
                                 }
                             });
