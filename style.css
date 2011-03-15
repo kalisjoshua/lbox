@@ -95,6 +95,7 @@ header {
         }
 
 p {
+    clear: both;
     margin: 1em 0px;
     }
     
