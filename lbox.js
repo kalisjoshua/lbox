@@ -1,6 +1,15 @@
 
 (function (window, $) {
-    var open = {};
+    var open = {},
+        origin = {
+            left: "50%",
+            height: 0,
+            margin: 0,
+            position: "fixed",
+            top: "50%",
+            width: 0,
+            zIndex: 999999
+        };
     
     $.fn.lbox = function (options) {
         options = $.extend({}, {
@@ -16,7 +25,11 @@
             // provide a way to reopen a link after it has been closed
             open[this.href] = true;
             event.preventDefault();
-            
+
+            // $.when($("<img/>", {"src": this.href})).
+            //     done(function (element) {
+            //         console.log(element.get(0).height);
+            //     });
             var blind = $("<div/>").
                             hide().
                             appendTo("body").
@@ -39,17 +52,17 @@
                                 };
                             }(this.href))),
                             
-                content = (function (link) {        
+                content = (function (link, temp) {        
                     if (/(?:gif|jpeg|jpg|png)$/i.test(link.href)) {
-                        return $("<img/>", {"src": link.href}).
-                            load(function () {
+                        temp = $("<img/>", {"src": link.href});
+                        $.when(temp).
+                            done(function (element) {
                                 var original = {
-                                    height: this.height,
-                                    width: this.width
+                                    height: element.get(0).height,
+                                    width: element.get(0).width
                                 };
-                                $(this).
-                                    appendTo("body").
-                                    show().
+                                
+                                element.
                                     animate({
                                         height: Math.floor(options.maxWidth / original.width * original.height),
                                         marginLeft: -Math.floor(options.maxWidth / 2),
@@ -58,40 +71,39 @@
                                     }, 1000);
                             });
                     } else {
-                        return $("<div/>", {"class": options.cssClass}).
-                            load(link.pathname + (!!link.hash ? " " + link.hash : ""), function () {
-                                $(this).
-                                    find("> *").
-                                        hide().
-                                    end().
-                                    appendTo("body").
-                                    show().
-                                    animate({
-                                        height: 400,
-                                        marginLeft: -Math.floor(options.maxWidth / 2),
-                                        marginTop: "-200px",
-                                        width: options.maxWidth
-                                    }, 1000, function () {
-                                        $(this).
-                                            find("> *").
-                                                fadeIn();
-                                    });
-                            }).
-                            css({
-                                background: "#FFFFFF",
-                                overflow: "auto"
+                        temp = $("<div/>", {"class": options.cssClass});
+                        
+                        $.ajax({
+                            url: link.href,
+                            success:
+                                function (response) {
+                                    temp.
+                                        html($(response).find(link.hash)).
+                                        find("> *").
+                                            hide().
+                                            end().
+                                        css({
+                                            background: "#FFFFFF",
+                                            overflow: "auto"
+                                        }).
+                                        animate({
+                                            height: 400,
+                                            marginLeft: -Math.floor(options.maxWidth / 2),
+                                            marginTop: "-200px",
+                                            width: options.maxWidth
+                                        }, 1000, function () {
+                                            $(this).
+                                                find("> *").
+                                                    fadeIn();
+                                        });
+                                }
                             });
                     }
-                }(this)).
-                    css({
-                        left: "50%",
-                        height: 0,
-                        margin: 0,
-                        position: "fixed",
-                        top: "50%",
-                        width: 0,
-                        zIndex: 999999
-                    });
+                    return temp.
+                        appendTo("body").
+                        css(origin).
+                        show();
+                }(this));
         });
     };
     
