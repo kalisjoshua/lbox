@@ -1,32 +1,32 @@
 
-(function (window, $) {
-    var open = {},
-        origin = {
-            left: "50%",
-            height: 0,
-            margin: 0,
-            position: "fixed",
-            top: "50%",
-            width: 0,
-            zIndex: 999999
-        };
+!!window.jQuery && (function (window, $) {
+    var open = {};
     
     $.fn.lbox = function (options) {
         options = $.extend({}, {
             cssClass: "lbox_window",
-            maxWidth: 600
+            duration: 400,
+            height: 500,
+            width: 600
         }, options);
         
         return this.live("click", function (event) {
             if (open[this.href]) {
-                // prevent the same link being opened twice
-                return;
+                return; // prevent the same link opening multiple lbox(es)
             }
-            // provide a way to reopen a link after it has been closed
             open[this.href] = true;
             event.preventDefault();
 
-            var blind = $("<div/>").
+            var exit = (function (h) {
+                    return function (event) {
+                        !!event && event.preventDefault(); // incase this is used as a click handler
+                        open[h] = false; // allow the lbox to be opend again after it is closed
+                        hide.stop().remove();
+                        lbox.stop().remove();
+                    };
+                }(this.href)),
+            
+                hide = $("<div/>").
                             hide().
                             appendTo("body").
                             css({
@@ -40,17 +40,12 @@
                                 zIndex: 999999
                             }).
                             fadeIn().
-                            click((function (h) {
-                                return function () {
-                                    open[h] = false;
-                                    blind.stop().remove();
-                                    content.stop().remove();
-                                };
-                            }(this.href))),
+                            click(exit),
                             
-                content = (function (link, temp) {        
+                lbox = (function (link, temp) {        
                     if (/(?:gif|jpeg|jpg|png)$/i.test(link.href)) {
-                        temp = $("<img/>", {"src": link.href});
+                        temp = $("<img/>", {"class": options.cssClass, "src": link.href});
+                        
                         $.when(temp).
                             done(function (element) {
                                 var original = {
@@ -60,48 +55,52 @@
                                 
                                 element.
                                     animate({
-                                        height: Math.floor(options.maxWidth / original.width * original.height),
-                                        marginLeft: -Math.floor(options.maxWidth / 2),
-                                        marginTop: -Math.floor(options.maxWidth / original.width * original.height / 2),
-                                        width: options.maxWidth
-                                    }, 1000);
+                                        height: Math.floor(options.width / original.width * original.height),
+                                        marginLeft: -Math.floor(options.width / 2),
+                                        marginTop: -Math.floor(options.width / original.width * original.height / 2),
+                                        width: options.width
+                                    }, options.duration);
                             });
                     } else {
                         temp = $("<div/>", {"class": options.cssClass});
-                        
-                        $.ajax({
-                            url: link.href,
-                            success:
-                                function (response) {
-                                    response = !!link.hash ? $(response).find(link.hash) : response;
-                                    temp.
-                                        html(response).
-                                        find("> *").
-                                            hide().
-                                            end().
-                                        css({
-                                            background: "#FFFFFF",
-                                            overflow: "auto"
-                                        }).
-                                        animate({
-                                            height: 400,
-                                            marginLeft: -Math.floor(options.maxWidth / 2),
-                                            marginTop: "-200px",
-                                            width: options.maxWidth
-                                        }, 1000, function () {
-                                            $(this).
-                                                find("> *").
-                                                    show();
-                                        });
-                                }
+
+                        $.get(link.href).
+                            done(function (response) {
+                                response = !!link.hash ? $(response).find(link.hash) : response;
+                                temp.
+                                    html(response).
+                                    find("> *").
+                                        hide().
+                                        end().
+                                    css({
+                                        background: "#FFFFFF",
+                                        overflow: "auto"
+                                    }).
+                                    animate({
+                                        height: options.height,
+                                        marginLeft: -Math.floor(options.width / 2),
+                                        marginTop: -Math.floor(options.height / 2),
+                                        width: options.width
+                                    }, options.duration, function () {
+                                        $(this).
+                                            find("> *").
+                                                show();
+                                    });
                             });
                     }
                     return temp.
                         appendTo("body").
-                        css(origin).
+                        css({
+                            left: "50%",
+                            height: 0,
+                            margin: 0,
+                            position: "fixed",
+                            top: "50%",
+                            width: 0,
+                            zIndex: 999999
+                        }).
                         show();
                 }(this));
         });
     };
-    
 }(window, jQuery));
