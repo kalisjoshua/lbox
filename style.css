@@ -1,24 +1,56 @@
-
-a {
-    color: #230632;
+/*
+div {
+    margin: 0px auto;
+    position: relative;
+    text-align: left;
+    width: 400px;
     }
-
+p {
+    clear: both;
+    margin: 1em 0px;
+    }
+*/
+a {
+    color: #FF2052;
+    }
+a:hover {
+    color: #E72094;
+    }
+    a img {
+        border: 2px solid transparent;
+        margin: -2px;
+        margin-bottom: 1em;
+        }
+    a:hover img {
+        border: 2px solid #E72094;
+        }
+    a img.left {
+        float: left;
+        margin-right: 1em;
+        width: 200px;
+        }
+    a img.right {
+        float: right;
+        margin-left: 1em;
+        width: 200px;
+        }
     a#forkme img {
-        border: 0;
+        border: 0px;
+        margin: 0px;
+        padding: 0px;
         position: absolute;
-        right: 0;
-        top: 0;
+        right: 0px;
+        top: 0px;
         }
 
 article {
+    font-size: 120%;
     margin: 0 auto;
     width: 700px;
     }
 
 body {
     font-family: Helvetica, Arial, FreeSans, sans-serif;
-    font-size: 110%;
-    color: #000000;
     }
 
 footer {
@@ -55,13 +87,12 @@ h3 {
 
 header {
     position: relative;
-    }
-    
-.download {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    }
+    }    
+    header .download {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        }
 
 p {
     margin: 1em 0px;
