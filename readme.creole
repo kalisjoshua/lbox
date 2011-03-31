@@ -1,0 +1,3 @@
+== lbox - lil' lightbox
+
+To see the demo and package download links see [[//kalisjoshua.github.com/lbox]]
