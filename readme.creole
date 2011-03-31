@@ -1,3 +1,3 @@
 == lbox - lil' lightbox
 
-To see the demo and package download links see [[http://kalisjoshua.github.com/lbox]]
+See [[http://kalisjoshua.github.com/lbox]] for demo and packaged download links
